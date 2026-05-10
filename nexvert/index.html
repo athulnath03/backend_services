@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXVERT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0c0c0f;
+  --bg2: #13131a;
+  --bg3: #1c1c26;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f0f0f8;
+  --text2: #7a7a9a;
+  --text3: #3a3a52;
+  --accent: #6c63ff;
+  --accent2: #9d98ff;
+  --accent-glow: rgba(108,99,255,0.3);
+  --accent-light: rgba(108,99,255,0.1);
+  --green: #00e5a0;
+  --green-glow: rgba(0,229,160,0.22);
+  --danger: #ff4f6d;
+  --font: 'Outfit', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --ease: cubic-bezier(0.4,0,0.2,1);
+  --spring: cubic-bezier(0.34,1.56,0.64,1);
+}
+
+[data-theme="light"] {
+  --bg: #ececf4;
+  --bg2: #ffffff;
+  --bg3: #f0f0f8;
+  --border: rgba(0,0,0,0.06);
+  --border2: rgba(0,0,0,0.11);
+  --text: #0c0c1a;
+  --text2: #60607a;
+  --text3: #c0c0d8;
+  --accent: #5a52f0;
+  --accent2: #7068f8;
+  --accent-glow: rgba(90,82,240,0.2);
+  --accent-light: rgba(90,82,240,0.08);
+  --green: #00b87a;
+  --green-glow: rgba(0,184,122,0.2);
+  --danger: #f03058;
+}
+
+html, body { height: 100%; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  transition: background 0.35s, color 0.35s;
+}
+
+/* ─ Ambient ─ */
+.ambient { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.blob {
+  position:absolute; border-radius:50%;
+  filter: blur(110px); opacity: 0.11;
+  animation: bfloat 14s ease-in-out infinite;
+}
+.b1 { width:560px;height:560px; background:var(--accent); top:-180px;left:-120px; animation-delay:0s; }
+.b2 { width:460px;height:460px; background:var(--green); bottom:-140px;right:-80px; animation-delay:-5s; }
+.b3 { width:280px;height:280px; background:#ff6b9d; top:45%;left:58%; animation-delay:-9s; }
+
+@keyframes bfloat {
+  0%,100% { transform:translate(0,0) scale(1); }
+  40%      { transform:translate(28px,-22px) scale(1.04); }
+  70%      { transform:translate(-14px,20px) scale(0.97); }
+}
+
+/* ─ Layout ─ */
+.page {
+  position:relative; z-index:1;
+  display:flex; flex-direction:column;
+  min-height:100vh; padding:0 24px;
+}
+
+/* ─ Header ─ */
+header {
+  display:flex; align-items:center;
+  justify-content:space-between;
+  padding: 26px 0 0;
+}
+.logo { display:flex; align-items:center; gap:10px; }
+.logo-mark {
+  width:33px;height:33px; border-radius:9px;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 18px var(--accent-glow);
+}
+.logo-text { font-size:20px;font-weight:800;letter-spacing:-0.5px; }
+.logo-text em { font-style:normal; color:var(--accent2); }
+.hdr-right { display:flex;align-items:center;gap:9px; }
+.ver {
+  font-family:var(--mono); font-size:10px; color:var(--text3);
+  padding:4px 10px; border:1px solid var(--border); border-radius:100px;
+  letter-spacing:.06em;
+}
+.tbtn {
+  width:36px;height:36px; border-radius:9px;
+  background:var(--bg2); border:1px solid var(--border);
+  cursor:pointer; display:flex;align-items:center;justify-content:center;
+  color:var(--text2); transition:all .2s;
+}
+.tbtn:hover { border-color:var(--border2); color:var(--text); }
+
+/* ─ Hero ─ */
+.hero { text-align:center; padding:44px 0 36px; }
+.hero h1 {
+  font-size:clamp(34px,5.5vw,60px);
+  font-weight:900; letter-spacing:-2px; line-height:.94;
+  margin-bottom:12px;
+}
+.grad {
+  background:linear-gradient(130deg,var(--accent2) 0%,var(--green) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero p { font-size:15px; color:var(--text2); }
+
+/* ─ Converter wrapper ─ */
+.converter {
+  max-width:860px; margin:0 auto; width:100%;
+  flex:1; padding-bottom:60px;
+  display:flex; flex-direction:column; gap:14px;
+}
+
+/* ─ Upload zone ─ */
+.upload-zone {
+  background:var(--bg2); border:1.5px dashed var(--border2);
+  border-radius:20px; padding:34px;
+  text-align:center; cursor:pointer;
+  position:relative; overflow:hidden;
+  transition:border-color .25s, box-shadow .25s;
+}
+.upload-zone::after {
+  content:''; position:absolute;inset:0;
+  background:var(--accent-light); opacity:0;
+  transition:opacity .2s; border-radius:inherit;
+  pointer-events:none;
+}
+.upload-zone:hover::after, .upload-zone.over::after { opacity:1; }
+.upload-zone.over { border-color:var(--accent); border-style:solid; }
+.upload-zone.loaded { display:none; }
+
+.uz-inner { display:flex;flex-direction:column;align-items:center;gap:11px;position:relative;z-index:1; }
+.uz-ring {
+  width:54px;height:54px; border-radius:50%;
+  border:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text2); transition:all .2s;
+}
+.upload-zone:hover .uz-ring { border-color:var(--accent);color:var(--accent);box-shadow:0 0 18px var(--accent-glow); }
+.uz-title { font-size:16px;font-weight:600; }
+.uz-sub { font-size:13px;color:var(--text2); }
+input[type="file"] { display:none; }
+
+/* ─ Main panel ─ */
+.panel {
+  display:none;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:20px; overflow:hidden;
+  box-shadow:0 24px 64px rgba(0,0,0,.28);
+  animation: panelIn .38s var(--spring) both;
+}
+.panel.on { display:block; }
+@keyframes panelIn {
+  from { opacity:0; transform:translateY(14px) scale(.97); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+
+.panel-inner {
+  display:grid;
+  grid-template-columns: 1fr 1px 1fr;
+}
+
+/* Divider */
+.divider {
+  background:var(--border);
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.divider-arrow {
+  width:32px;height:32px; border-radius:50%;
+  background:var(--bg3); border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--accent2);
+  position:absolute; z-index:2;
+  box-shadow:0 2px 10px rgba(0,0,0,.2);
+}
+
+/* ─ FROM col ─ */
+.col-from {
+  padding:28px 24px;
+  display:flex; flex-direction:column; gap:18px;
+}
+.col-lbl {
+  font-size:11px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text3);
+}
+.from-display {
+  display:flex; align-items:center; gap:15px;
+  flex:1;
+}
+.ext-chip {
+  width:68px;height:68px; border-radius:16px;
+  background:var(--accent-light);
+  border:1.5px solid var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  box-shadow:0 0 22px var(--accent-glow);
+  position:relative; overflow:hidden;
+}
+.ext-chip::before {
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.07) 0%,transparent 60%);
+}
+.ext-chip span {
+  font-family:var(--mono); font-size:15px;font-weight:500;
+  color:var(--accent2); text-transform:uppercase;
+  letter-spacing:.04em; position:relative;z-index:1;
+}
+.from-meta { display:flex;flex-direction:column;gap:3px;min-width:0; }
+.from-name {
+  font-size:14px;font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.from-size { font-size:11px;color:var(--text2);font-family:var(--mono); }
+.from-kind { font-size:11px;color:var(--text3); }
+.change-btn {
+  display:inline-flex;align-items:center;gap:5px;
+  background:none; border:1px solid var(--border2);
+  border-radius:8px; padding:6px 11px;
+  font-family:var(--font); font-size:12px;font-weight:500;
+  color:var(--text2); cursor:pointer;
+  transition:all .15s; width:fit-content;
+}
+.change-btn:hover { border-color:var(--accent);color:var(--accent); }
+
+/* ═══════════════════════════════════
+   TO col — iOS Picker Wheel
+═══════════════════════════════════ */
+.col-to {
+  padding:20px 0 24px;
+  display:flex; flex-direction:column;
+  align-items:stretch; gap:12px;
+}
+.col-to-lbl {
+  font-size:11px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text3); padding:0 24px;
+}
+
+/* Tile grid */
+.tile-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap:10px;
+  padding:0 24px 24px;
+  flex:1;
+  align-content:start;
+}
+
+.tile {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:16px 8px 14px;
+  border-radius:14px;
+  border:1.5px solid var(--border2);
+  background:var(--bg3);
+  cursor:pointer;
+  transition:all .18s var(--ease);
+  position:relative;
+  overflow:hidden;
+}
+.tile::before {
+  content:'';
+  position:absolute;inset:0;
+  background:var(--accent-light);
+  opacity:0;
+  transition:opacity .18s;
+  border-radius:inherit;
+}
+.tile:hover::before { opacity:1; }
+.tile:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 6px 20px var(--accent-glow); }
+
+.tile.selected {
+  border-color:var(--accent);
+  background:var(--accent-light);
+  box-shadow:0 0 0 1px var(--accent), 0 4px 18px var(--accent-glow);
+}
+.tile.selected::before { opacity:1; }
+
+.tile-icon {
+  width:32px;height:32px;
+  border-radius:8px;
+  background:var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);
+  font-size:9px;font-weight:600;
+  letter-spacing:.04em;
+  color:var(--text2);
+  text-transform:uppercase;
+  transition:all .18s;
+  position:relative;z-index:1;
+}
+.tile.selected .tile-icon {
+  background:var(--accent);
+  color:#fff;
+  box-shadow:0 2px 10px var(--accent-glow);
+}
+.tile:hover:not(.selected) .tile-icon { background:var(--accent-light); color:var(--accent2); }
+
+.tile-label {
+  font-size:11px;font-weight:600;
+  letter-spacing:.03em;
+  color:var(--text2);
+  text-transform:uppercase;
+  font-family:var(--mono);
+  position:relative;z-index:1;
+  transition:color .18s;
+}
+.tile.selected .tile-label { color:var(--accent2); }
+.tile:hover:not(.selected) .tile-label { color:var(--text); }
+
+.tile-desc {
+  font-size:10px;color:var(--text3);
+  position:relative;z-index:1;
+  transition:color .18s;
+  white-space:nowrap;
+}
+.tile.selected .tile-desc { color:var(--text2); }
+.tile:hover:not(.selected) .tile-desc { color:var(--text2); }
+
+/* ─ Action bar ─ */
+.actions {
+  display:none; flex-direction:column; gap:10px;
+}
+.actions.on { display:flex; }
+
+.cvt-btn {
+  width:100%; padding:17px;
+  border-radius:14px; border:none;
+  background:var(--accent); color:#fff;
+  font-family:var(--font); font-size:17px;font-weight:700;
+  letter-spacing:-.3px; cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  transition:all .2s var(--ease);
+  box-shadow:0 4px 22px var(--accent-glow);
+  position:relative;overflow:hidden;
+}
+.cvt-btn::before {
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.08) 0%,transparent 55%);
+  pointer-events:none;
+}
+.cvt-btn:hover:not(:disabled) { transform:translateY(-2px);box-shadow:0 8px 32px var(--accent-glow);filter:brightness(1.08); }
+.cvt-btn:active:not(:disabled) { transform:translateY(0); }
+.cvt-btn:disabled { opacity:.3;cursor:not-allowed;transform:none;box-shadow:none; }
+
+/* Status */
+.status {
+  display:none; background:var(--bg2);
+  border:1px solid var(--border); border-radius:13px;
+  padding:15px 18px; gap:12px;align-items:center;
+  animation:fadeUp .22s var(--ease) both;
+}
+.status.on { display:flex; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)} }
+
+.s-dot {
+  width:8px;height:8px;border-radius:50%;
+  flex-shrink:0;background:var(--text3);transition:background .3s;
+}
+.s-dot.pending    { background:var(--text3); }
+.s-dot.processing { background:var(--accent);animation:pulse 1.3s infinite; }
+.s-dot.done       { background:var(--green);box-shadow:0 0 8px var(--green-glow); }
+.s-dot.failed     { background:var(--danger); }
+
+@keyframes pulse {
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:.4;transform:scale(.65);}
+}
+
+.s-body { flex:1; }
+.s-label { font-size:14px;font-weight:500;margin-bottom:7px; }
+.s-id    { font-family:var(--mono);font-size:10px;color:var(--text3);float:right; }
+.prog    { height:2px;background:var(--border);border-radius:100px;overflow:hidden; }
+.prog-fill {
+  height:100%;background:var(--accent);border-radius:100px;
+  width:0%;transition:width .5s var(--ease);
+}
+.prog-fill.anim {
+  width:40%!important;
+  animation:ind 1.3s cubic-bezier(.65,0,.35,1) infinite;
+}
+@keyframes ind { from{transform:translateX(-200%)}to{transform:translateX(400%)} }
+
+/* Error */
+.err {
+  display:none;align-items:flex-start;gap:8px;
+  background:rgba(255,79,109,.07);
+  border:1px solid rgba(255,79,109,.18);
+  border-radius:10px; padding:11px 14px;
+  font-size:13px;color:var(--danger);
+}
+.err.on { display:flex; }
+
+/* Download */
+.dl-btn {
+  width:100%;padding:17px;
+  border-radius:14px;border:none;
+  background:var(--green);color:#041510;
+  font-family:var(--font);font-size:17px;font-weight:700;
+  cursor:pointer;display:none;
+  align-items:center;justify-content:center;gap:9px;
+  text-decoration:none;
+  transition:all .2s var(--ease);
+  box-shadow:0 4px 22px var(--green-glow);
+  animation:fadeUp .22s var(--ease) both;
+}
+.dl-btn.on { display:flex; }
+.dl-btn:hover { filter:brightness(1.07);transform:translateY(-2px);box-shadow:0 8px 30px var(--green-glow); }
+
+.rst-btn {
+  background:none;border:none;
+  color:var(--text3);font-family:var(--font);
+  font-size:13px;cursor:pointer;
+  text-align:center;width:100%;padding:4px;
+  display:none;transition:color .15s;
+}
+.rst-btn.on { display:block; }
+.rst-btn:hover { color:var(--accent2); }
+
+/* ─ Footer ─ */
+footer {
+  text-align:center;padding:18px;
+  font-size:11px;color:var(--text3);
+  position:relative;z-index:1;letter-spacing:.02em;
+}
+
+@media(max-width:580px){
+  .panel-inner { grid-template-columns:1fr; grid-template-rows:auto 1px auto; }
+  .divider { height:1px; }
+  .divider-arrow { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="ambient">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+</div>
+
+<div class="page">
+  <header>
+    <div class="logo">
+      <div class="logo-mark">
+        <svg width="17" height="17" viewBox="0 0 18 18" fill="none">
+          <path d="M9 2v10M9 2L5.5 5.5M9 2L12.5 5.5" stroke="white" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 15h12" stroke="white" stroke-width="1.9" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="logo-text">NEX<em>VERT</em></span>
+    </div>
+    <div class="hdr-right">
+      <span class="ver">v1.0</span>
+      <button class="tbtn" id="themeBtn" aria-label="Toggle theme">
+        <svg id="iSun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg id="iMoon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1>Convert <span class="grad">anything</span><br>instantly.</h1>
+    <p>Upload · Pick a format · Done</p>
+  </div>
+
+  <div class="converter">
+    <input type="file" id="fileInput">
+
+    <!-- Upload -->
+    <div class="upload-zone" id="uploadZone">
+      <div class="uz-inner">
+        <div class="uz-ring">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="uz-title">Drop your file here</div>
+        <div class="uz-sub">or click to browse · PNG, JPG, PDF, MP4, DOCX, XLSX and more · Max 50 MB</div>
+      </div>
+    </div>
+
+    <!-- Panel -->
+    <div class="panel" id="panel">
+      <div class="panel-inner">
+
+        <!-- FROM -->
+        <div class="col-from">
+          <div class="col-lbl">From</div>
+          <div class="from-display">
+            <div class="ext-chip"><span id="extText">—</span></div>
+            <div class="from-meta">
+              <div class="from-name" id="fromName">—</div>
+              <div class="from-size" id="fromSize">—</div>
+              <div class="from-kind" id="fromKind">—</div>
+            </div>
+          </div>
+          <button class="change-btn" id="changeBtn">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Change file
+          </button>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider">
+          <div class="divider-arrow">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- TO -->
+        <div class="col-to">
+          <div class="col-to-lbl">To</div>
+          <div class="tile-grid" id="tileGrid"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions" id="actions">
+      <div class="status" id="statusEl">
+        <div class="s-dot" id="sDot"></div>
+        <div class="s-body">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+            <span class="s-label" id="sLabel">—</span>
+            <span class="s-id" id="sId"></span>
+          </div>
+          <div class="prog"><div class="prog-fill" id="progFill"></div></div>
+        </div>
+      </div>
+
+      <div class="err" id="errEl">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="errText"></span>
+      </div>
+
+      <button class="cvt-btn" id="cvtBtn" disabled>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Convert
+      </button>
+
+      <a class="dl-btn" id="dlBtn" href="#">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download
+      </a>
+
+      <button class="rst-btn" id="rstBtn">↩ Start over</button>
+    </div>
+  </div>
+
+  <footer>NEXVERT · Local file converter · No data leaves your machine</footer>
+</div>
+
+<script>
+/* ═══════════════════════════════
+   DATA
+═══════════════════════════════ */
+const ALLOWED = {
+  png:  { targets:['jpg','webp'],      label:'PNG Image' },
+  jpg:  { targets:['png','webp'],      label:'JPEG Image' },
+  jpeg: { targets:['png','webp'],      label:'JPEG Image' },
+  webp: { targets:['png','jpg'],       label:'WebP Image' },
+  pdf:  { targets:['png','jpg'],       label:'PDF Document' },
+  mp4:  { targets:['mp3','gif','wav'], label:'MP4 Video' },
+  mp3:  { targets:['wav'],            label:'MP3 Audio' },
+  wav:  { targets:['mp3'],            label:'WAV Audio' },
+  gif:  { targets:['mp4','png'],      label:'GIF Animation' },
+  docx: { targets:['pdf'],            label:'Word Document' },
+  pptx: { targets:['pdf'],            label:'PowerPoint' },
+  xlsx: { targets:['pdf'],            label:'Excel Spreadsheet' },
+};
+const EXT_DISPLAY = {
+  jpg:'JPEG', png:'PNG', webp:'WebP', pdf:'PDF',
+  mp3:'MP3', mp4:'MP4', wav:'WAV', gif:'GIF'
+};
+const EXT_DESC = {
+  jpg:'Image',png:'Image',webp:'Image',pdf:'Document',
+  mp3:'Audio',mp4:'Video',wav:'Audio',gif:'Animation',
+  docx:'Word',pptx:'Slides',xlsx:'Spreadsheet'
+};
+
+/* ═══════════════════════════════
+   THEME
+═══════════════════════════════ */
+const html = document.documentElement;
+const initTheme = localStorage.getItem('nxv-theme') ||
+  (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+html.dataset.theme = initTheme;
+syncThemeIcons();
+
+document.getElementById('themeBtn').onclick = () => {
+  html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('nxv-theme', html.dataset.theme);
+  syncThemeIcons();
+};
+function syncThemeIcons(){
+  const d = html.dataset.theme === 'dark';
+  document.getElementById('iSun').style.display  = d ? 'block':'none';
+  document.getElementById('iMoon').style.display = d ? 'none':'block';
+}
+
+/* ═══════════════════════════════
+   UPLOAD
+═══════════════════════════════ */
+const fileInput  = document.getElementById('fileInput');
+const uploadZone = document.getElementById('uploadZone');
+
+uploadZone.onclick = () => fileInput.click();
+uploadZone.ondragover = e => { e.preventDefault(); uploadZone.classList.add('over'); };
+uploadZone.ondragleave = () => uploadZone.classList.remove('over');
+uploadZone.ondrop = e => { e.preventDefault(); uploadZone.classList.remove('over'); loadFile(e.dataTransfer.files[0]); };
+fileInput.onchange = () => loadFile(fileInput.files[0]);
+document.getElementById('changeBtn').onclick = () => fileInput.click();
+
+let curFile = null, curExt = '', curFmt = null, pollTimer = null;
+
+function loadFile(f) {
+  if (!f) return;
+  if (f.size > 50*1024*1024) return boom('File exceeds 50 MB');
+  const e = f.name.split('.').pop().toLowerCase();
+  if (!ALLOWED[e]) return boom(`Unsupported format: .${e}`);
+
+  curFile = f; curExt = e;
+  clearErr();
+
+  document.getElementById('extText').textContent = e.toUpperCase();
+  document.getElementById('fromName').textContent = f.name;
+  document.getElementById('fromSize').textContent = humanBytes(f.size);
+  document.getElementById('fromKind').textContent = ALLOWED[e].label;
+
+  buildTiles(ALLOWED[e].targets);
+
+  uploadZone.classList.add('loaded');
+  document.getElementById('panel').classList.add('on');
+  document.getElementById('actions').classList.add('on');
+  dlBtn.classList.remove('on');
+  rstBtn.classList.remove('on');
+  statusEl.classList.remove('on');
+  progFill.className = 'prog-fill';
+  progFill.style.width = '0';
+  cvtBtn.disabled = false;
+}
+
+/* ═══════════════════════════════
+   TILE PICKER
+═══════════════════════════════ */
+const tileGrid = document.getElementById('tileGrid');
+
+function buildTiles(formats) {
+  tileGrid.innerHTML = '';
+  curFmt = null;
+  cvtBtn.disabled = true;
+
+  formats.forEach(fmt => {
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    tile.dataset.fmt = fmt;
+    tile.innerHTML = `
+      <div class="tile-icon">${(EXT_DISPLAY[fmt] || fmt).slice(0,4)}</div>
+      <div class="tile-label">${EXT_DISPLAY[fmt] || fmt.toUpperCase()}</div>
+      <div class="tile-desc">${EXT_DESC[fmt] || ''}</div>
+    `;
+    tile.addEventListener('click', () => selectTile(fmt));
+    tileGrid.appendChild(tile);
+  });
+
+  // Auto-select if only one option
+  if (formats.length === 1) selectTile(formats[0]);
+}
+
+function selectTile(fmt) {
+  curFmt = fmt;
+  tileGrid.querySelectorAll('.tile').forEach(t => {
+    t.classList.toggle('selected', t.dataset.fmt === fmt);
+  });
+  cvtBtn.disabled = false;
+}
+
+/* ═══════════════════════════════
+   CONVERT + POLL
+═══════════════════════════════ */
+const cvtBtn   = document.getElementById('cvtBtn');
+const statusEl = document.getElementById('statusEl');
+const sDot     = document.getElementById('sDot');
+const sLabel   = document.getElementById('sLabel');
+const sId      = document.getElementById('sId');
+const progFill = document.getElementById('progFill');
+const dlBtn    = document.getElementById('dlBtn');
+const rstBtn   = document.getElementById('rstBtn');
+const errEl    = document.getElementById('errEl');
+
+cvtBtn.addEventListener('click', async () => {
+  if (!curFile || !curFmt) return;
+  cvtBtn.disabled = true;
+  dlBtn.classList.remove('on');
+  rstBtn.classList.remove('on');
+  clearErr();
+  statusEl.classList.add('on');
+  setState('pending','Uploading…');
+  progFill.className = 'prog-fill anim';
+
+  const fd = new FormData();
+  fd.append('file', curFile);
+  fd.append('output_format', curFmt);
+
+  try {
+    const r = await fetch('/convert/', { method:'POST', body:fd });
+    const d = await r.json();
+    if (!r.ok) return boom(d.detail || 'Upload failed');
+    sId.textContent = d.job_id.slice(0,8)+'…';
+    setState('processing','Converting…');
+    pollTimer = setInterval(() => poll(d.job_id), 1500);
+  } catch {
+    boom('Cannot reach server — is NEXVERT running?');
+  }
+});
+
+async function poll(id) {
+  try {
+    const r = await fetch(`/status/${id}`);
+    const d = await r.json();
+    if (d.status === 'done') {
+      clearInterval(pollTimer);
+      progFill.className = 'prog-fill';
+      progFill.style.width = '100%';
+      setState('done','Conversion complete');
+      const lbl = EXT_DISPLAY[curFmt] || curFmt.toUpperCase();
+      dlBtn.href = `/download/${id}`;
+      dlBtn.download = `converted.${curFmt}`;
+      dlBtn.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download ${lbl}`;
+      dlBtn.classList.add('on');
+      rstBtn.classList.add('on');
+    } else if (d.status === 'failed') {
+      clearInterval(pollTimer);
+      progFill.className = 'prog-fill';
+      setState('failed','Failed');
+      boom(d.error || 'Conversion failed');
+      cvtBtn.disabled = false;
+    }
+  } catch {}
+}
+
+rstBtn.addEventListener('click', fullReset);
+
+function fullReset() {
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  curFile = null; curExt = ''; curFmt = null;
+  fileInput.value = '';
+  uploadZone.classList.remove('loaded');
+  document.getElementById('panel').classList.remove('on');
+  document.getElementById('actions').classList.remove('on');
+  dlBtn.classList.remove('on');
+  rstBtn.classList.remove('on');
+  statusEl.classList.remove('on');
+  clearErr();
+  progFill.className = 'prog-fill';
+  progFill.style.width = '0';
+  cvtBtn.disabled = false;
+  tileGrid.innerHTML = '';
+}
+
+function setState(state, msg) {
+  sDot.className = 's-dot ' + state;
+  sLabel.textContent = msg;
+}
+
+function boom(msg) {
+  errEl.classList.add('on');
+  document.getElementById('errText').textContent = msg;
+  statusEl.classList.remove('on');
+  cvtBtn.disabled = false;
+}
+
+function clearErr() { errEl.classList.remove('on'); }
+
+function humanBytes(b) {
+  if (b < 1024)    return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
+}
+</script>
+</body>
+</html>
